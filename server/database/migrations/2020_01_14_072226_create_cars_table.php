@@ -15,6 +15,7 @@ class CreateCarsTable extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('auction_id');
             $table->char('vin', 17);
             $table->string('make');
             $table->string('model');
@@ -47,6 +48,8 @@ class CreateCarsTable extends Migration
             $table->string('exterior_color')->nullable();
             $table->unsignedInteger('odometer');
             $table->timestamps();
+
+            $table->foreign('auction_id')->references('id')->on('auctions')->onDelete('cascade');
         });
     }
 
