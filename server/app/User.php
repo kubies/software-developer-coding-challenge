@@ -37,6 +37,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function bids() {
+        return $this->hasMany(Bid::class);
+    }
+
     public function auctions() {
         return $this->hasMany(Auction::class, 'created_by');
     }

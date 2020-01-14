@@ -42,6 +42,17 @@ class UserController extends Controller
     }
 
     /**
+     * Return all bids placed by user ordered by creation time and id
+     */
+    public function bids($id) {
+        $user = User::find($id);
+        if($user === null) {
+            return response()->json(['errors' => ['User Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        return $user->bids()->orderBy('created_at', 'desc')->orderBy('id', 'desc')->get();
+    }
+
+    /**
      * Create a new user (user registration)
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse

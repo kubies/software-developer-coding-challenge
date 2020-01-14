@@ -240,6 +240,20 @@ class AuctionTest extends TestCase
                     "auction_id" => $id
                 ]
             ]);
+
+        $this->get("/api/user/{$user->id}/bids")->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                [
+                    "amount" => 1000,
+                    "user_id" => $user->id,
+                    "auction_id" => $id
+                ],
+                [
+                    "amount" => 900,
+                    "user_id" => $user->id,
+                    "auction_id" => $id
+                ]
+            ]);
     }
 
     private function user() {
