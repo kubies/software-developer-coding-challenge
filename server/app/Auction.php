@@ -12,6 +12,10 @@ class Auction extends Model
         return $this->hasOne(Car::class);
     }
 
+    public function user() {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function addCar($car) {
         $this->carRelation()->create($car);
     }
@@ -34,4 +38,5 @@ class Auction extends Model
             "odometer" => $car->odometer
         ];
     }
+
 }

@@ -19,6 +19,31 @@ class AuctionController extends Controller
     }
 
     /**
+     * Returns an auction
+     */
+    public function show($id) {
+        $auction = Auction::find($id);
+        if($auction === null) {
+            return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        return $auction;
+    }
+
+    /**
+     * Delete an auction
+     */
+    public function destroy($id) {
+        $auction = Auction::find($id);
+        if($auction === null) {
+            return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        if($auction->user->id != auth()->user()->id) {
+            return response()->json(['errors' => ['Unauthorized operation']], Response::HTTP_UNAUTHORIZED);
+        }
+        $auction->delete();
+    }
+
+    /**
      * Create an auction
      */
     public function create(Request $request) {

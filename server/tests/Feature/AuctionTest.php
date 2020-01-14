@@ -109,6 +109,60 @@ class AuctionTest extends TestCase
                 "as_is" => false
             ]
         ]);
+
+        $this->get('/api/auction/1')->assertStatus(Response::HTTP_OK)->assertJson([
+            "car" => [
+                "vin" => "ABCDEFGHKLOIYSLKH",
+                "make" => "Hyundai",
+                "model" => "Tuscon",
+                "style" => null,
+                "year" => 2013,
+                "seats" => null,
+                "doors" => null,
+                "engine" => null,
+                "transmission" => null,
+                "body" => "wagon",
+                "interior_color" => null,
+                "exterior_color" => null,
+                "odometer" => 130000
+            ],
+            "created_by" => $user->id,
+            "start_price" => "800",
+            "bid_increment" => "100",
+            "as_is" => false
+        ]);
+    }
+
+    /**
+     * @test
+     *
+     */
+    public function delete_auction() {
+        $user = $this->user();
+        $this->actingAs($user);
+        $response = $this->post('/api/auction', [
+            "car" => [
+                "vin" => "ABCDEFGHKLOIYSLKH",
+                "make" => "Hyundai",
+                "model" => "Tuscon",
+                "year" => 2013,
+                "body" => "wagon",
+                "odometer" => 130000
+            ],
+            "start_price" => "800",
+            "bid_increment" => "100"
+        ]);
+
+        $this->assertDatabaseHas('auctions',
+            [
+                'id' => 2
+            ]);
+        $this->delete('/api/auction/2')
+            ->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseMissing('auctions',
+            [
+                'id' => 2
+            ]);
     }
 
     private function user() {
