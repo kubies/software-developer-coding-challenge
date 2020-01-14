@@ -11,6 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
 class AuctionController extends Controller
 {
     /**
+     * Returns list of all auctions
+     */
+
+    public function index() {
+        return Auction::all();
+    }
+
+    /**
      * Create an auction
      */
     public function create(Request $request) {
@@ -23,7 +31,7 @@ class AuctionController extends Controller
                 ],
                 Response::HTTP_BAD_REQUEST);
         }
-        $auction = auth()->user()->createAuction($request->all());
+        return auth()->user()->createAuction($request->all());
         $car = $auction->car;
         return [
             "car" => [

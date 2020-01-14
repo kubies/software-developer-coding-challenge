@@ -36,7 +36,7 @@ class AuctionTest extends TestCase
             "start_price" => "800",
             "bid_increment" => "100"
         ]);
-        $response->assertStatus(Response::HTTP_OK)
+        $response->assertStatus(Response::HTTP_CREATED)
         ->assertJson([
             "car" => [
                 "vin" => "ABCDEFGHKLOIYSLKH",
@@ -60,6 +60,30 @@ class AuctionTest extends TestCase
         ]);
         $this->assertDatabaseHas('cars', [
            "vin" =>  "ABCDEFGHKLOIYSLKH"
+        ]);
+
+        $this->get('/api/auctions')->assertJson([
+            [
+                "car" => [
+                    "vin" => "ABCDEFGHKLOIYSLKH",
+                    "make" => "Hyundai",
+                    "model" => "Tuscon",
+                    "style" => null,
+                    "year" => 2013,
+                    "seats" => null,
+                    "doors" => null,
+                    "engine" => null,
+                    "transmission" => null,
+                    "body" => "wagon",
+                    "interior_color" => null,
+                    "exterior_color" => null,
+                    "odometer" => 130000
+                ],
+                "created_by" => $user->id,
+                "start_price" => "800",
+                "bid_increment" => "100",
+                "as_is" => false
+            ]
         ]);
     }
 
