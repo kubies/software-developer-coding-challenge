@@ -69,6 +69,17 @@ class AuctionController extends Controller
     }
 
     /**
+     * Returns all bids for an auction ordered by creation time
+     */
+    public function bids($id) {
+        $auction = Auction::find($id);
+        if($auction === null) {
+            return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        return $auction->bids()->orderBy('created_at', 'desc')->orderBy('amount', 'desc')->get();
+    }
+
+    /**
      * Create an auction
      */
     public function create(Request $request) {
