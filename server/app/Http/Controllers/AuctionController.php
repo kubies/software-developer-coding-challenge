@@ -33,6 +33,9 @@ class AuctionController extends Controller
      * Delete an auction
      */
     public function destroy($id) {
+        if(auth()->user() === null) {
+            return response()->json(['errors' => ['Please login to access this page']], Response::HTTP_FORBIDDEN);
+        }
         $auction = Auction::find($id);
         if($auction === null) {
             return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
@@ -47,6 +50,9 @@ class AuctionController extends Controller
      * Allowing the user to place bid based on aution bid increment
      */
     public function placeBid($id) {
+        if(auth()->user() === null) {
+            return response()->json(['errors' => ['Please login to access this page']], Response::HTTP_FORBIDDEN);
+        }
         $auction = Auction::find($id);
         if($auction === null) {
             return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
@@ -83,6 +89,9 @@ class AuctionController extends Controller
      * Create an auction
      */
     public function create(Request $request) {
+        if(auth()->user() === null) {
+            return response()->json(['errors' => ['Please login to access this page']], Response::HTTP_FORBIDDEN);
+        }
         //Check for valid parameters
         $validator = $this->validateAuction($request);
         if ($validator->fails()) {

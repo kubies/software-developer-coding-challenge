@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -74,7 +75,44 @@ class UserController extends Controller
         return User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
+            'password' => Hash::make($request->get('password'))
         ]);
+    }
+
+    public function login(Request $request)  {
+        if(auth()->user() !== null) {
+            return response()->json(['errors' => ['you are logged in']], Response::HTTP_BAD_REQUEST);
+        }
+        $validator = Validator::make($request->all(),
+            [
+                'email' => ['required'],
+                'password' => ['required']
+            ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    "errors" => collect($validator->messages()->messages())->flatten(1)
+                ],
+                Response::HTTP_BAD_REQUEST);
+        }
+        $user = User::where('email', $request->get('email'))->first();
+        if($user === null || !Hash::check($request->get('password'), $user->password)) {
+            return response()->json(['errors' => ['Invalid username or password']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $token = Str::random(80);
+        $user->forceFill([
+            'api_token' => hash('sha256', $token)
+        ])->save();
+        return ['token' => $token];
+    }
+
+    public function logout() {
+        if(auth()->user() === null) {
+            return;
+        }
+        auth()->user()->forceFill([
+            'api_token' => null
+        ])->save();
     }
 }

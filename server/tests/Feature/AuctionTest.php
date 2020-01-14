@@ -24,6 +24,9 @@ class AuctionTest extends TestCase
      * @test
      */
     public function create_auction_with_missing_fields() {
+        $this->post('/api/auction')->assertStatus(Response::HTTP_FORBIDDEN);
+        $user = $this->user();
+        $this->actingAs($user);
         $this->post('/api/auction')->assertStatus(Response::HTTP_BAD_REQUEST);
     }
 
