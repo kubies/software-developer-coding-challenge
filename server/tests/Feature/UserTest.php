@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -98,4 +99,31 @@ class UserTest extends TestCase
             ]
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function get_invalid_user() {
+        $this->get('/api/user/999')->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * @test
+     */
+    public function get_valid_user() {
+        $this->post('/api/register', [
+            "name" => "Masoud Hosseini",
+            "email" => "massoud.hosseini@gmail.com",
+            "password" => "password"
+        ]);
+        $id = User::max('id');
+        $this->get("/api/user/{$id}")
+            ->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                "id" => $id,
+                "name" => "Masoud Hosseini",
+                "email" => "massoud.hosseini@gmail.com",
+            ]);
+    }
+
 }

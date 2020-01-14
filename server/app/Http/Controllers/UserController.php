@@ -18,7 +18,22 @@ class UserController extends Controller
     }
 
     /**
+     * Return User information
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id) {
+        $user = User::find($id);
+        if($user === null) {
+            return response()->json(['errors' => ['User Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        return $user;
+    }
+
+    /**
      * Create a new user (user registration)
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function create(Request $request) {
         $validator = Validator::make($request->all(),
