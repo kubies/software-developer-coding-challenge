@@ -7,10 +7,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Faker\Factory as Faker;
 
 class AuctionTest extends TestCase
 {
     use RefreshDatabase;
+    private $faker;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        $this->faker = Faker::create();
+    }
+
     /**
      * @test
      */
@@ -152,23 +161,70 @@ class AuctionTest extends TestCase
             "start_price" => "800",
             "bid_increment" => "100"
         ]);
-
+        $id = $response['id'];
         $this->assertDatabaseHas('auctions',
             [
-                'id' => 2
+                'id' => $id
             ]);
-        $this->delete('/api/auction/2')
+        $this->delete("/api/auction/$id")
             ->assertStatus(Response::HTTP_OK);
         $this->assertDatabaseMissing('auctions',
             [
-                'id' => 2
+                'id' => $id
             ]);
+    }
+
+    /**
+     * @test
+     */
+    public function user_can_place_bid() {
+        $user = $this->user();
+        $this->actingAs($user);
+        $response = $this->post('/api/auction', [
+            "car" => [
+                "vin" => "ABCDEFGHKLOIYSLKH",
+                "make" => "Hyundai",
+                "model" => "Tuscon",
+                "year" => 2013,
+                "body" => "wagon",
+                "odometer" => 130000
+            ],
+            "start_price" => "800",
+            "bid_increment" => "100"
+        ]);
+        $id = $response['id'];
+        $this->put("/api/auction/$id")->assertStatus(Response::HTTP_UNAUTHORIZED);
+
+        $user = $this->user();
+        $this->actingAs($user);
+        $response = $this->put("/api/auction/$id")->assertStatus(Response::HTTP_CREATED);
+        $response->assertJson([
+            "amount" => 900,
+            "user_id" => $user->id,
+            "auction_id" => $id
+        ]);
+        $this->assertDatabaseHas('bids', [
+            "amount" => 900,
+            "user_id" => $user->id,
+            "auction_id" => $id
+        ]);
+
+        $this->put("/api/auction/$id")->assertStatus(Response::HTTP_CREATED)->assertJson([
+            "amount" => 1000,
+            "user_id" => $user->id,
+            "auction_id" => $id
+        ]);
+        $this->assertDatabaseHas('bids', [
+            "amount" => 1000,
+            "user_id" => $user->id,
+            "auction_id" => $id
+        ]);
     }
 
     private function user() {
         return User::create([
-            "name" => "Masoud Hosseini",
-            "email" => "massoud.hosseini@gmail.com",
+            "name" => $this->faker->name,
+            "email" => $this->faker->companyEmail,
             "password" => "password"
         ]);
     }

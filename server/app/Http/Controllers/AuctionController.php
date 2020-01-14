@@ -44,6 +44,20 @@ class AuctionController extends Controller
     }
 
     /**
+     * Allowing the user to place bid based on aution bid increment
+     */
+    public function placeBid($id) {
+        $auction = Auction::find($id);
+        if($auction === null) {
+            return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        if($auction->user->id === auth()->user()->id) {
+            return response()->json(['errors' => ['Unauthorized operation']], Response::HTTP_UNAUTHORIZED);
+        }
+        return $auction->placeBid();
+    }
+
+    /**
      * Create an auction
      */
     public function create(Request $request) {

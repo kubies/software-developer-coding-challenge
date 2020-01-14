@@ -17,4 +17,4 @@ Route::get('/auction/{id}/highestBid', 'AuctionController@highestBid');     //Au
 
 Route::post('/auction', 'AuctionController@create');                        //Creating Auction
 Route::delete('/auction/{id}', 'AuctionController@destroy');                //Deleting Auction
-Route::put('/auction/{id}', 'AuctionController@bid');                       //Creating Bid
+Route::put('/auction/{id}', 'AuctionController@placeBid');                  //Creating Bid

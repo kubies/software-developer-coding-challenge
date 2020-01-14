@@ -39,4 +39,22 @@ class Auction extends Model
         ];
     }
 
+    public function bids(){
+        return $this->hasMany(Bid::class);
+    }
+
+    public function highestBid(){
+        return $this->bids()->orderBy('amount', 'desc')->first();
+    }
+
+    public function placeBid() {
+        //Get current maximum bid
+        $max = $this->bids()->max('amount') ?? $this->start_price;
+        return $this->bids()->create([
+            'user_id' => auth()->user()->id,
+            'amount'  => $max + $this->bid_increment
+        ]);
+
+
+    }
 }
