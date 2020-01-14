@@ -58,6 +58,17 @@ class AuctionController extends Controller
     }
 
     /**
+     * Returns highest bid of an auction
+     */
+    public function highestBid($id) {
+        $auction = Auction::find($id);
+        if($auction === null) {
+            return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
+        }
+        return $auction->highestBid();
+    }
+
+    /**
      * Create an auction
      */
     public function create(Request $request) {

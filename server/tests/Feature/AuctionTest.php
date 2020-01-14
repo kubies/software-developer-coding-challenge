@@ -219,6 +219,13 @@ class AuctionTest extends TestCase
             "user_id" => $user->id,
             "auction_id" => $id
         ]);
+
+        $this->get("/api/auction/$id/highestBid")->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                "amount" => 1000,
+                "user_id" => $user->id,
+                "auction_id" => $id
+            ]);
     }
 
     private function user() {
