@@ -56,14 +56,25 @@
       <el-checkbox v-model="as_is">As Is</el-checkbox>
     </el-form-item>
     <el-form-item>
-      <el-button type="success" @click="create">Create</el-button>
+      <el-alert
+        v-if="errors.length > 0"
+        type="error">
+        <ul>
+          <li v-for="err in errors">{{err}}</li>
+        </ul>
+      </el-alert>
+    </el-form-item>
+    <el-form-item>
+      <el-button :loading="saving" type="success" @click="create">Create</el-button>
       <el-button @click="$router.push({path: '/'})">Cancel</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
-export default {
+  import {createAuction} from "../api/auction";
+
+  export default {
   name: "create_auction",
   data() {
     return {
@@ -102,12 +113,40 @@ export default {
         {label: 'Commercial', value: 'commercial'},
         {label: 'Trailer', value: 'trailer'},
         {label: 'Hatchback', value: 'hatchback'},
-      ]
+      ],
+      errors: [],
+      saving: false,
     }
   },
   methods: {
     create() {
-
+      this.saving = true
+      createAuction({
+        car: {
+          vin: this.vin,
+          make: this.make,
+          model: this.model,
+          style: this.style,
+          year: this.year,
+          seats: this.seats,
+          doors: this.doors,
+          engine: this.engine,
+          transmission: this.transmission,
+          body: this.body,
+          interior_color: this.interior_color,
+          exterior_color: this.exterior_color,
+          odometer: this.odometer,
+        },
+        start_price: this.start_price,
+        bid_increment: this.bid_increment,
+        as_is: this.as_is,
+      }).then(result => {
+        this.$router.push({path: '/'})
+      }).catch(error => {
+        this.errors = error.response.data.errors
+      }).finally(() => {
+        this.saving = false
+      })
     }
   }
 }

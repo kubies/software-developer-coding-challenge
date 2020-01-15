@@ -34,6 +34,7 @@ const actions = {
       logout().then(response => {
         const {data} = response
         commit('SET_TOKEN', null)
+        commit('SET_USER', null)
         removeToken()
         resolve(data)
       }).catch(err => {

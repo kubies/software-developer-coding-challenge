@@ -2,8 +2,10 @@ import auctions from './views/auctions'
 import login from "./views/login";
 import register from "./views/register";
 import create_auction from "./views/create_auction";
+import user from './views/user'
 import VueRouter from "vue-router";
 import store from "./store";
+import auction from "./views/auction";
 const routes = [
   {
     path: '/',
@@ -25,6 +27,16 @@ const routes = [
     component: create_auction,
     name: 'create'
   },
+  {
+    path: '/auction/:auction_id',
+    component: auction,
+    name: 'auction'
+  },
+  {
+    path: '/user/:user_id',
+    component: user,
+    name: 'user'
+  }
 ]
 
 const protected_routes = [

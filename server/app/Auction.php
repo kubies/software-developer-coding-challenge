@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Auction extends Model
 {
     protected $guarded = [];
-    protected $appends = ['car'];
+    protected $appends = ['car', 'highestBid'];
+    protected $hidden = ['car_relation'];
     public function carRelation() {
         return $this->hasOne(Car::class);
     }
@@ -37,6 +38,9 @@ class Auction extends Model
             "exterior_color" => $car->exterior_color,
             "odometer" => $car->odometer
         ];
+    }
+    public function getHighestBidAttribute() {
+        return $this->bids()->max('amount') ?? $this->start_price;
     }
 
     public function bids(){
