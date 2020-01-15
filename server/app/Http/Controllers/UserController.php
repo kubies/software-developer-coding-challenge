@@ -115,4 +115,8 @@ class UserController extends Controller
             'api_token' => null
         ])->save();
     }
+
+    public function me() {
+        return auth()->user();
+    }
 }

@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 Route::post('/register', 'UserController@create');
 Route::post('/login', 'UserController@login')->name('login');
 Route::middleware('auth:api')->post('/logout', 'UserController@logout')->name('logout');
+Route::middleware('auth:api')->get('/me', 'UserController@me');
 
 Route::get('/users', 'UserController@index');                               //All Users
 Route::get('/auctions', 'AuctionController@index');                         //All Auctions
