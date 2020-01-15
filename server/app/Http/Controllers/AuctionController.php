@@ -57,9 +57,6 @@ class AuctionController extends Controller
         if($auction === null) {
             return response()->json(['errors' => ['Auction Not Found']], Response::HTTP_NOT_FOUND);
         }
-        if($auction->user->id === auth()->user()->id) {
-            return response()->json(['errors' => ['Unauthorized operation']], Response::HTTP_UNAUTHORIZED);
-        }
         return $auction->placeBid();
     }
 
