@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Tests\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Faker\Factory as Faker;
 
 class AuctionTest extends TestCase
 {
+    use WithoutMiddleware;
     use RefreshDatabase;
     private $faker;
 
@@ -24,10 +26,14 @@ class AuctionTest extends TestCase
      * @test
      */
     public function create_auction_with_missing_fields() {
-        $this->post('/api/auction')->assertStatus(Response::HTTP_FORBIDDEN);
+        $this->post('/api/auction', [], [
+            "Accept" => "application/json"
+        ])->assertStatus(Response::HTTP_FORBIDDEN);
         $user = $this->user();
         $this->actingAs($user);
-        $this->post('/api/auction')->assertStatus(Response::HTTP_BAD_REQUEST);
+        $this->post('/api/auction', [], [
+            "Accept" => "application/json"
+        ])->assertStatus(Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -163,6 +169,8 @@ class AuctionTest extends TestCase
             ],
             "start_price" => "800",
             "bid_increment" => "100"
+        ], [
+            "Accept" => "application/json"
         ]);
         $id = $response['id'];
         $this->assertDatabaseHas('auctions',
@@ -194,9 +202,11 @@ class AuctionTest extends TestCase
             ],
             "start_price" => "800",
             "bid_increment" => "100"
+        ], [
+            "Accept" => "application/json"
         ]);
         $id = $response['id'];
-        $this->put("/api/auction/$id")->assertStatus(Response::HTTP_UNAUTHORIZED);
+        $response = $this->put("/api/auction/$id")->assertStatus(Response::HTTP_UNAUTHORIZED);
 
         $user = $this->user();
         $this->actingAs($user);

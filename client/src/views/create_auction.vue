@@ -1,74 +1,77 @@
 <template>
-  <el-form ref="form" label-width="120px">
-    <el-form-item label="VIN">
-      <el-input v-model="vin"></el-input>
-    </el-form-item>
-    <el-form-item label="Make">
-      <el-input v-model="make"></el-input>
-    </el-form-item>
-    <el-form-item label="Model">
-      <el-input v-model="model"></el-input>
-    </el-form-item>
-    <el-form-item label="Style">
-      <el-input v-model="style"></el-input>
-    </el-form-item>
-    <el-form-item label="Year">
-      <el-input-number v-model="year"></el-input-number>
-    </el-form-item>
-    <el-form-item label="Seats">
-      <el-input-number v-model="seats"></el-input-number>
-    </el-form-item>
-    <el-form-item label="Doors">
-      <el-input-number v-model="doors"></el-input-number>
-    </el-form-item>
-    <el-form-item label="Engine">
-      <el-input v-model="engine"></el-input>
-    </el-form-item>
-    <el-form-item label="Transmission">
-      <el-input v-model="transmission"></el-input>
-    </el-form-item>
-    <el-form-item label="Body">
-      <el-select v-model="body" placeholder="Select">
-        <el-option
-          v-for="item in bodies"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Interior Color">
-      <el-input v-model="interior_color"></el-input>
-    </el-form-item>
-    <el-form-item label="Exterior Color">
-      <el-input v-model="exterior_color"></el-input>
-    </el-form-item>
-    <el-form-item label="Odometer">
-      <el-input v-model="odometer"></el-input>
-    </el-form-item>
-    <el-form-item label="Start Price">
-      <el-input v-model="start_price"></el-input>
-    </el-form-item>
-    <el-form-item label="Bid Increment">
-      <el-input v-model="bid_increment"></el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-checkbox v-model="as_is">As Is</el-checkbox>
-    </el-form-item>
-    <el-form-item>
+  <el-container class="auction">
+    <el-form ref="form" label-width="120px">
+      <el-form-item label="VIN">
+        <el-input v-model="vin"></el-input>
+      </el-form-item>
+      <el-form-item label="Make">
+        <el-input v-model="make"></el-input>
+      </el-form-item>
+      <el-form-item label="Model">
+        <el-input v-model="model"></el-input>
+      </el-form-item>
+      <el-form-item label="Style">
+        <el-input v-model="style"></el-input>
+      </el-form-item>
+      <el-form-item label="Year">
+        <el-input-number v-model="year"></el-input-number>
+      </el-form-item>
+      <el-form-item label="Seats">
+        <el-input-number v-model="seats"></el-input-number>
+      </el-form-item>
+      <el-form-item label="Doors">
+        <el-input-number v-model="doors"></el-input-number>
+      </el-form-item>
+      <el-form-item label="Engine">
+        <el-input v-model="engine"></el-input>
+      </el-form-item>
+      <el-form-item label="Transmission">
+        <el-input v-model="transmission"></el-input>
+      </el-form-item>
+      <el-form-item label="Body">
+        <el-select v-model="body" placeholder="Select">
+          <el-option
+            v-for="item in bodies"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Interior Color">
+        <el-input v-model="interior_color"></el-input>
+      </el-form-item>
+      <el-form-item label="Exterior Color">
+        <el-input v-model="exterior_color"></el-input>
+      </el-form-item>
+      <el-form-item label="Odometer">
+        <el-input v-model="odometer"></el-input>
+      </el-form-item>
+      <el-form-item label="Start Price">
+        <el-input v-model="start_price"></el-input>
+      </el-form-item>
+      <el-form-item label="Bid Increment">
+        <el-input v-model="bid_increment"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-checkbox v-model="as_is">As Is</el-checkbox>
+      </el-form-item>
+    </el-form>
+    <el-row v-if="errors && errors.length > 0" style="margin-bottom: 20px">
       <el-alert
-        v-if="errors.length > 0"
+        @close="errors = []"
         type="error">
         <ul>
           <li v-for="err in errors">{{err}}</li>
         </ul>
       </el-alert>
-    </el-form-item>
-    <el-form-item>
+    </el-row>
+    <el-row style="text-align: center">
       <el-button :loading="saving" type="success" @click="create">Create</el-button>
       <el-button @click="$router.push({path: '/'})">Cancel</el-button>
-    </el-form-item>
-  </el-form>
+    </el-row>
+  </el-container>
+
 </template>
 
 <script>
@@ -143,6 +146,10 @@
       }).then(result => {
         this.$router.push({path: '/'})
       }).catch(error => {
+        if(error.response.status === 401) {
+          this.$message.error('Please login to create an auction')
+          return
+        }
         this.errors = error.response.data.errors
       }).finally(() => {
         this.saving = false
@@ -152,6 +159,32 @@
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+  .auction {
+    max-width: 1200px;
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+    .el-form {
+      display: flex;
+      flex-wrap: wrap;
+
+      margin-top: 60px;
+      .el-form-item {
+        width: 50%;
+        .el-select {
+          width: 100%;
+        }
+        .el-input-number {
+          width: 100%;
+        }
+      }
+    }
+    .el-button {
+      width: 25%;
+      max-width: 200px;
+    }
+  }
 
 </style>

@@ -5,6 +5,7 @@
     </el-row>
     <el-row>
       <el-table
+        empty-text="No Auction"
         v-loading="loading"
         :data="auctions"
         style="width: 100%">
@@ -82,7 +83,7 @@ export default {
     carFormatter(row, col) { return `${row.car.year} ${row.car.make} ${row.car.model}`},
     handleDelete(auction) {
       deleteAuction(auction.id).then(() => {
-        auction_idx = this.auctions.findIndex(a => a.id === auction.id)
+        let auction_idx = this.auctions.findIndex(a => a.id === auction.id)
         this.auctions.splice(auction_idx, 1)
       }).catch(err => {
         console.log(err.response)

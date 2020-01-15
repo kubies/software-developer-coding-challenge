@@ -1,9 +1,9 @@
 <template>
-  <el-container>
+  <el-container style="padding-bottom: 40px;">
     <el-header style="display: flex; height: auto">
       <el-carousel trigger="click" height="600px" style="width: 100%">
         <el-carousel-item v-for="img in images" :key="img">
-          <el-image style="margin-left: auto; margin-right: auto" :src="img" fit="contain"></el-image>
+          <el-image style="margin-left: auto; margin-right: auto" :src="img" fit="scale-down"></el-image>
         </el-carousel-item>
       </el-carousel>
 
@@ -11,19 +11,21 @@
     <el-main>
       <span class="ui red right ribbon label" style="left: calc(100% + 1rem + 20px);">AS-IS</span>
       <h2 class="ui dividing header">
-        {{auction.car.year}} {{auction.car.make}} {{auction.car.model}}
+        <span v-if="auction">
+          {{carName}}
+        </span>
         <div class="sub header">
           <div class="ui two column stackable grid" style="padding: 10px">
             <div class="column">
-              <h4 class="row ui header" v-if="auction.transmission">
-                {{auction.transmission}}
+              <h4 class="row ui header" v-if="auction && auction.car.transmission">
+                {{auction.car.transmission}}
               </h4>
-              <h4 class="row ui header" v-if="auction.car.odometer">
+              <h4 class="row ui header" v-if="auction && auction.car.odometer">
                 {{kilometerFormatter(auction.car.odometer)}}
               </h4>
             </div>
             <div class="column" style="text-align: right">
-              <h3 class="row ui header">
+              <h3 class="row ui header" v-if="auction">
                 {{priceFormatter(auction.highestBid)}}
               </h3>
             </div>
@@ -33,41 +35,41 @@
           <div class="user-avatar">
             <img style="max-width: 100%;" src="https://media-exp1.licdn.com/dms/image/C5603AQHt3k-Mw7dIkg/profile-displayphoto-shrink_100_100/0?e=1584576000&v=beta&t=__3e2wYfSndMMa4MGGCi9CORNgzF1PSrenA7Hpso-5E">
           </div>
-          <div class="user-basic-info">
-            <el-link class="user-nick" @click="$router.push({name: 'user', params: {user_id: auction.user.id}})">{{auction.user.name}}</el-link>
+          <div class="user-basic-info" v-if="auction">
+            <span class="user-nick">{{auction.user.name}}</span>
           </div>
         </div>
       </h2>
       <div class="details">
-        <div class="detail" v-if="auction.car.vin">
+        <div class="detail" v-if="auction && auction.car.vin">
           <b>VIN: </b>
           {{auction.car.vin}}
         </div>
-        <div class="detail" v-if="auction.car.style">
+        <div class="detail" v-if="auction && auction.car.style">
           <b>Style: </b>
           {{auction.car.style}}
         </div>
-        <div class="detail" v-if="auction.car.body">
+        <div class="detail" v-if="auction && auction.car.body">
           <b>Body: </b>
           {{auction.car.body}}
         </div>
-        <div class="detail" v-if="auction.car.seats">
+        <div class="detail" v-if="auction && auction.car.seats">
           <b>Seats: </b>
           {{auction.car.seats}}
         </div>
-        <div class="detail" v-if="auction.car.doors">
+        <div class="detail" v-if="auction && auction.car.doors">
           <b>Doors: </b>
           {{auction.car.doors}}
         </div>
-        <div class="detail"  v-if="auction.car.engine">
+        <div class="detail"  v-if="auction && auction.car.engine">
           <b></b>
           {{auction.car.engine}}
         </div>
-        <div class="detail" v-if="auction.car.exterior_color">
+        <div class="detail" v-if="auction && auction.car.exterior_color">
           <b>Exterior Color</b>
           {{auction.car.exterior_color}}
         </div>
-        <div class="detail" v-if="auction.car.interior_color">
+        <div class="detail" v-if="auction && auction.car.interior_color">
           <b>Interior Color</b>
           {{auction.car.interior_color}}
         </div>
@@ -75,14 +77,14 @@
 
       <h3 class="ui header">
         Bids
-        <el-button :loading="saving" @click="placeBid" style="float: right">Place Bid</el-button>
+        <el-button v-if="$store.getters.authenticated && $store.getters.user.id !== auction.created_by" :loading="saving" @click="placeBid" style="float: right">Place Bid</el-button>
       </h3>
-      <el-timeline>
+      <el-timeline v-if="auction">
         <el-timeline-item
           v-for="(bid, idx) in auction.bids"
           :key="idx"
           :timestamp="bid.created_at">
-          <b>{{priceFormatter(bid.amount)}}</b> - <el-link @click="$router.push({name: 'user', params: {user_id: bid.user.id}})">{{bid.user.name}}</el-link>
+          <b>{{priceFormatter(bid.amount)}}</b> - {{bid.user.name}}
         </el-timeline-item>
       </el-timeline>
     </el-main>
@@ -145,6 +147,11 @@
         creationDateFormatter(date) {return formatter.DateFormatter(date)},
         kilometerFormatter(km) {return formatter.KilometerFormatter(km)},
         priceFormatter(price) {return formatter.PriceFormatter(price)},
+      },
+      computed: {
+        carName() {
+          return `${this.auction.car.year} ${this.auction.car.make} ${this.auction.car.model}`
+        }
       }
     }
 </script>
