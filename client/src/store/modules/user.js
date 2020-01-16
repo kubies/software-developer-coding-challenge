@@ -38,6 +38,11 @@ const actions = {
         removeToken()
         resolve(data)
       }).catch(err => {
+        if(err.response.status === 401) {
+          commit('SET_TOKEN', null)
+          commit('SET_USER', null)
+          removeToken()
+        }
         reject(err.response)
       })
     })

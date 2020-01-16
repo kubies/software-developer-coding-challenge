@@ -74,11 +74,7 @@ http://localhost:8000/api/auction/{id}              #Method: Put, submit a bid f
 ```
 
 **Running unit test**
-To install `phpunit` run following command from code main directory:
-```bash
-composer update
-```
-Run following command from code main directory
+Run following command from code `server` directory
 ```bash
 vendor/bin/phpunit tests/Feature/AuctionTest.php
 vendor/bin/phpunit tests/Feature/UserTest.php
