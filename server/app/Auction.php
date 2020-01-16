@@ -8,7 +8,7 @@ class Auction extends Model
 {
     protected $guarded = [];
     protected $appends = ['car', 'highestBid'];
-    protected $hidden = ['car_relation'];
+    protected $hidden = ['carRelation'];
     public function carRelation() {
         return $this->hasOne(Car::class);
     }
